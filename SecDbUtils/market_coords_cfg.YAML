@@ -1,0 +1,15 @@
+#this is a config file for the market assets
+defaults:
+    equity:
+      stock:
+        default: &equity_stock_default
+          extractor: "default"
+          pts: ["spot"]
+
+market_coordinates:
+    equity:
+      stock:
+        snp:
+          <<: *equity_stock_default
+
+
