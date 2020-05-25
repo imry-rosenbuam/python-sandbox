@@ -2,14 +2,14 @@
 defaults:
     equity:
       stock:
-        default: &equity_stock_default
+        default: &equity_index_default
           extractor: "default"
-          pts: ["spot"]
+          pts: ["0M"]
 
 market_coordinates:
     equity:
-      stock:
+      index:
         snp:
-          <<: *equity_stock_default
+          <<: *equity_index_default
 
 

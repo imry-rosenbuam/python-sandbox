@@ -3,6 +3,9 @@ import datetime
 import yaml
 from mkt_data_loader import *
 
+from SecDbUtils.SecDbClasses import Singleton, LocalSingleton
+
+
 class mktObj(metaclass=Singleton):
     _date = datetime.date.today()
     _dateStr = "ss"
@@ -23,7 +26,6 @@ class mktObj(metaclass=Singleton):
         return self._mkt_data.get(data_key, None)
 
     def _load_mkt_data(self, data_key: str):
-
         mkt_coord = MktCoordParser.Parse_Mkt_Coord(data_key)
 
         mkt_loader = MarketDataloader.get_market_loader(mkt_coord)
@@ -33,32 +35,31 @@ class mktObj(metaclass=Singleton):
 # inflation zcs gbp 10y.yoy
 class MktCoordParser(LocalSingleton):
     @classmethod
-    def parse_mkt_coord(self, mkt_coord_str: str):
+    def parse_mkt_coord(cls, mkt_coord_str: str):
 
         mkt_coord = mkt_coord_str.lower().split(".")
         quote_style = "default" if len(mkt_coord) == 1 else mkt_coord.pop()
         mkt_coord = mkt_coord.pop().split("_")
         mkt_coords = {}
 
-        type = mkt_coord.pop() #get type
+        type = mkt_coord.pop()  # get type
         mkt_coords["type"] = type
 
         if len(mkt_coord):
-            asset = mkt_coord.pop() #get asset
+            asset = mkt_coord.pop()  # get asset
             mkt_coords["asset"] = asset
 
         if len(mkt_coord):
-            klass = mkt_coord.pop() #get class
+            klass = mkt_coord.pop()  # get class
             mkt_coords["class"] = klass
 
         if len(mkt_coord):
-            points = mkt_coord #get point(s)
+            points = mkt_coord  # get point(s)
             mkt_coords["points"] = points
 
         mkt_coords["quote"] = quote_style
 
         return mkt_coords
-
 
 
 xxx = 1

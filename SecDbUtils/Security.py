@@ -1,5 +1,3 @@
-
-
 def SecValidation(economicData):
     # values that need to be populated
     vals = {
@@ -9,17 +7,19 @@ def SecValidation(economicData):
     if vals.isdisjoint(set(economicData.keys())):
         raise AssertionError
 
+
 class Security:
     __economicData = {}
 
-    def __init__(self,economicData):
-        SecValidation(economicData)
-        self.__economicData = economicData
+    def __init__(self, economic_data):
+        SecValidation(economic_data)
+        self.__economicData = economic_data
 
-    def Price(self):
+    def price(self):
         raise NotImplementedError
-    def GetCcy(self):
-        return self.__economicData.ccy
-    def DollarPrice(self, mkt):
-        return mkt.getFxSpot(self.GetCcy(), "USD")
 
+    def get_ccy(self):
+        return self.__economicData.ccy
+
+    def dollar_price(self, mkt):
+        return mkt.getFxSpot(self.GetCcy(), "USD")

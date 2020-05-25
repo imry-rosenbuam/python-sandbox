@@ -1,7 +1,16 @@
-import yaml
 
-with open('market_coords_cfg.YAML') as f:
-    data = yaml.load(f, Loader=yaml.FullLoader)
-    print(data)
 
-xx = 1
+import pandas as pd
+import datetime
+
+xx = datetime.date(1996, 10, 12)
+
+ss = xx.today()
+
+ssa = str(ss)
+
+dd = pd.DataFrame()
+
+
+
+s = 1
