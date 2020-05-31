@@ -1,35 +1,33 @@
-from SecDbClasses import *
+from SecDbUtils.SecDbClasses import *
 import datetime
 import yaml
-from mkt_data_loader import *
+from SecDbUtils.MktDataLoader import MarketDataLoader
+from SecDbUtils.SecDbClasses import Singleton, LocalSingleton, MktObjData
 
-from SecDbUtils.SecDbClasses import Singleton, LocalSingleton
 
-
-class mktObj(metaclass=Singleton):
-    _date = datetime.date.today()
-    _dateStr = "ss"
-    _mkt_data = {}
+class MktObj(metaclass=Singleton):
+    _data = MktObjData()
+    _mkt_cfg = MktDataCfg()
 
     def get_date(self):
-        return self._date
+        if not self._data.mkt_date:
+            raise Exception("Makret Object has not been initalized")
+        return self._data.mkt_date
 
     def set_date(self, date):
-        self._date = date
+        self._data.mkt_date = date
 
     def get_mkt_data(self, data_key: str):
-        s = dict()
 
-        if data_key not in s.keys():
-            x._load_mkt_data(data_key)
+        if data_key not in self._data.mkt_data.keys():
+            self._data.mkt_data[data_key] = self._load_mkt_data(data_key)
 
-        return self._mkt_data.get(data_key, None)
+        return self._data.mkt_data.get(data_key, None)
 
     def _load_mkt_data(self, data_key: str):
-        mkt_coord = MktCoordParser.Parse_Mkt_Coord(data_key)
+        mkt_coord = MktCoordParser.parse_mkt_coord(data_key)
 
-        mkt_loader = MarketDataloader.get_market_loader(mkt_coord)
-
+        return MarketDataLoader.get_mkt_data(mkt_coord)
 
 # type asset class point(s) quote_style splitting char is _ and . for quote style
 # inflation zcs gbp 10y.yoy
@@ -42,15 +40,15 @@ class MktCoordParser(LocalSingleton):
         mkt_coord = mkt_coord.pop().split("_")
         mkt_coords = {}
 
-        type = mkt_coord.pop()  # get type
+        type = mkt_coord.pop(0)  # get type
         mkt_coords["type"] = type
 
         if len(mkt_coord):
-            asset = mkt_coord.pop()  # get asset
+            asset = mkt_coord.pop(0)  # get asset
             mkt_coords["asset"] = asset
 
         if len(mkt_coord):
-            klass = mkt_coord.pop()  # get class
+            klass = mkt_coord.pop(0)  # get class
             mkt_coords["class"] = klass
 
         if len(mkt_coord):
@@ -62,4 +60,3 @@ class MktCoordParser(LocalSingleton):
         return mkt_coords
 
 
-xxx = 1

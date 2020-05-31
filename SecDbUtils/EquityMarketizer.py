@@ -1,5 +1,5 @@
 from SecDbUtils.SecDbClasses import Marketizer
-import pandas
+import pandas as pd
 import sys
 import yfinance as yf
 import os
@@ -12,9 +12,9 @@ equity_tickers_to_marketsie = {
 }
 
 
-class equity_marketiser(Marketizer):
+class EquityMarketiser(Marketizer):
     @classmethod
-    def get_equity_ticker_data(cls, ticker: str, start_date: datetime, end_date: datetime) -> pandas.DataFrame:
+    def get_equity_ticker_data(cls, ticker: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
         df = yf.download(ticker,
                          start=start_date,
                          end=end_date,
@@ -22,9 +22,9 @@ class equity_marketiser(Marketizer):
         return df
 
     @classmethod
-    def marketise_equity_data(cls, file_name: str, ticker: str, start_date: datetime, end_date: datetime) -> None:
-        #we might need to add index as the timestamp in order to make retrivel of points easier via feather
-        df = cls.marketize_load(file_name)
+    def marketise_equity_data(cls, index_name: str, ticker: str, start_date: datetime, end_date: datetime) -> None:
+        # we might need to add index as the timestamp in order to make retrivel of points easier via feather
+        df = cls.marketize_load(index_name)
 
         df_new = cls.get_equity_ticker_data(ticker, start_date, end_date)
 
@@ -33,18 +33,33 @@ class equity_marketiser(Marketizer):
         else:
             df = df_new
 
-        cls.marketize_save(df, file_name)
+        cls.marketize_save(df, index_name)
+
+    @classmethod
+    def get_equity_ticker_data_point(cls, index_name: str, date: datetime.date):
+
+        return cls.get_equity_ticker_data_slice(index_name, date, date)
+
+    @classmethod
+    def get_equity_ticker_data_slice(cls,index_name:str, start_date:datetime.date, end_date: datetime.date):
+        df = cls.marketize_load(index_name)
+        return df[pd.Timestamp(start_date):pd.Timestamp(end_date)].to_dict()
+
+    @classmethod
+    def get_equity_tickers(cls):
+        return equity_tickers_to_marketsie.keys()
 
 
 if __name__ == "__main__":
     arg = sys.argv
     arg.pop(0)
 
-    marketiser = equity_marketiser()
+    marketiser = EquityMarketiser()
     tickers_to_marketise = equity_tickers_to_marketsie.keys()
 
-    start_date = datetime.date.today()
-    end_date = start_date + datetime.timedelta(days=1)
+    offest = 1500
+    start_date = datetime.date.today() + datetime.timedelta(days=-1 * offest)
+    end_date = start_date + datetime.timedelta(days=offest + 1)
 
     if len(arg) == 0:
         raise ('not enough args provided')

@@ -4,8 +4,10 @@ from abc import ABC, abstractmethod
 import feather
 import pandas as pd
 import os
+import pyarrow.parquet as pq
 
 path = "/Users/imryrosenbaum/PycharmProjects/tsdb_data/"
+
 
 class Singleton(type, ABC):
     _instances = {}
@@ -36,13 +38,13 @@ class AbstractMarkeDataExtractor(LocalSingleton, ABC):
 
 
 class MktDataLoader(Singleton):
-
+    @classmethod
     @abstractmethod
-    def mkt_data_laod(cls, mkt_coord: dict):
+    def mkt_data_load(mcs, mkt_coord: dict):
         pass
 
 
-class MktDataCfg:
+class MktDataCfg(metaclass=Singleton):
 
     def __init__(self):
         with open('market_coords_cfg.YAML') as f:
@@ -52,7 +54,8 @@ class MktDataCfg:
 class Marketizer:
     @classmethod
     def marketize_save(cls, df: pd.DataFrame, file_name: str, msg: str = "") -> None:
-        feather.write_dataframe(df, cls.file_path(file_name))
+        # feather.write_dataframe(df, cls.file_path(file_name))
+        df.to_parquet(cls.file_path(file_name))
         if msg == "":
             print("markeitzed to " + file_name)
         else:
@@ -61,11 +64,32 @@ class Marketizer:
     @classmethod
     def marketize_load(cls, file_name: str) -> pd.DataFrame:
         if os.path.isfile(cls.file_path(file_name)):
-            df = feather.read_dataframe(cls.file_path(file_name))
+            # df = feather.read_dataframe(cls.file_path(file_name))
+            df = pd.read_parquet(cls.file_path(file_name))
             return df
 
         return pd.DataFrame()
 
     @classmethod
     def file_path(cls, file_name: str):
-        return path + file_name + '.ftr'
+        return path + file_name + '.parquet'
+
+class MktObjData(metaclass=Singleton):
+    mkt_date = None
+    mkt_data = {}
+
+class Mkt_Conventions:
+    future_codes = {
+        "january": "F",
+        "february": "G",
+        "march": "H",
+        "april": "J",
+        "may": "K",
+        "june": "M",
+        "july": "N",
+        "august": "Q",
+        "september": "U",
+        "october": "V",
+        "november": "X",
+        "december": "Z"
+    }

@@ -4,7 +4,7 @@ defaults:
       stock:
         default: &equity_index_default
           extractor: "default"
-          pts: ["0M"]
+          points: ["spot"]
 
 market_coordinates:
     equity:

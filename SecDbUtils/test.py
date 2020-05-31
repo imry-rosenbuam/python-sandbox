@@ -1,16 +1,26 @@
-
-
 import pandas as pd
-import datetime
+import yfinance as yf
+import yahoofinancials
+import feather
+import os
+import  datetime
+from SecDbUtils.MktObj import MktObj
+import yaml
+import sys
 
-xx = datetime.date(1996, 10, 12)
+xxx = sys.path
 
-ss = xx.today()
-
-ssa = str(ss)
-
-dd = pd.DataFrame()
+#path = "/Users/imryrosenbaum/PycharmProjects/tsdb_data/"
 
 
+mkt_coord_str = "equity_index_snp500_spot"
 
-s = 1
+date = datetime.date(2019,5,15)
+
+mkt_obj = MktObj()
+
+mkt_obj.set_date(date)
+
+ss = mkt_obj.get_mkt_data(mkt_coord_str)
+
+sdsf = 1
