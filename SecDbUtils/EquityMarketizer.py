@@ -41,7 +41,7 @@ class EquityMarketiser(Marketizer):
         return cls.get_equity_ticker_data_slice(index_name, date, date)
 
     @classmethod
-    def get_equity_ticker_data_slice(cls,index_name:str, start_date:datetime.date, end_date: datetime.date):
+    def get_equity_ticker_data_slice(cls, index_name: str, start_date: datetime.date, end_date: datetime.date):
         df = cls.marketize_load(index_name)
         return df[pd.Timestamp(start_date):pd.Timestamp(end_date)].to_dict()
 
@@ -57,12 +57,12 @@ if __name__ == "__main__":
     marketiser = EquityMarketiser()
     tickers_to_marketise = equity_tickers_to_marketsie.keys()
 
-    offest = 1500
-    start_date = datetime.date.today() + datetime.timedelta(days=-1 * offest)
+    offest = 1500  # the offset for the backfill
+    start_date = datetime.date.today()
     end_date = start_date + datetime.timedelta(days=offest + 1)
 
     if len(arg) == 0:
-        raise ('not enough args provided')
+        raise Exception('not enough args provided')
     elif len(arg) == 3:
         temp_arg = arg.pop(0).lower()
 
@@ -90,6 +90,9 @@ if __name__ == "__main__":
         if temp_arg == 'PREV':
             start_date = start_date + datetime.timedelta(days=-1)
             end_date = end_date + datetime.timedelta(days=-1)
+        elif temp_arg == 'BACKFILL':
+            start_date = start_date + datetime.timedelta(days=-3000)
+            end_date = end_date + datetime.timedelta(days=-1)
         elif temp_arg == 'TODAY':
             pass
 
@@ -99,12 +102,15 @@ if __name__ == "__main__":
         if arg == 'PREV':
             start_date = start_date + datetime.timedelta(days=-1)
             end_date = end_date + datetime.timedelta(days=-1)
+        elif arg == 'BACKFILL':
+            start_date = start_date + datetime.timedelta(days=-3000)
+            end_date = end_date + datetime.timedelta(days=-1)
         elif arg == 'TODAY':
             pass
 
     for k in tickers_to_marketise:
         v = equity_tickers_to_marketsie.get(k, "")
         marketiser.marketise_equity_data(k, v, start_date, end_date)
-        print("the ticker " + v + " has been marketised succesfuly")
+        print("the ticker " + v + " has been magnetises successfully")
 
-    xx = 1
+    print('completed the Equity magnetisation process')

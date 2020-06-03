@@ -6,7 +6,8 @@ import pandas as pd
 import os
 import pyarrow.parquet as pq
 
-path = "/Users/imryrosenbaum/PycharmProjects/tsdb_data/"
+# path = "/Users/imryrosenbaum/PycharmProjects/tsdb_data/"
+path = os.environ['TSDB_DATA']
 
 
 class Singleton(type, ABC):
@@ -74,9 +75,11 @@ class Marketizer:
     def file_path(cls, file_name: str):
         return path + file_name + '.parquet'
 
+
 class MktObjData(metaclass=Singleton):
     mkt_date = None
     mkt_data = {}
+
 
 class Mkt_Conventions:
     future_codes = {

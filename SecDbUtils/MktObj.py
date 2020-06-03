@@ -5,13 +5,13 @@ from SecDbUtils.MktDataLoader import MarketDataLoader
 from SecDbUtils.SecDbClasses import Singleton, LocalSingleton, MktObjData
 
 
-class MktObj(metaclass=Singleton):
+class Market(metaclass=Singleton):
     _data = MktObjData()
     _mkt_cfg = MktDataCfg()
 
     def get_date(self):
         if not self._data.mkt_date:
-            raise Exception("Makret Object has not been initalized")
+            raise Exception("Market Object has not been initalized")
         return self._data.mkt_date
 
     def set_date(self, date):
@@ -19,10 +19,17 @@ class MktObj(metaclass=Singleton):
 
     def get_mkt_data(self, data_key: str):
 
-        if data_key not in self._data.mkt_data.keys():
-            self._data.mkt_data[data_key] = self._load_mkt_data(data_key)
+        mkt_coord = MktCoordParser.parse_mkt_coord(data_key)
 
-        return self._data.mkt_data.get(data_key, None)
+        if not mkt_coord.get("asset", None):
+            return None
+        else:
+            mkt_key = (mkt_coord['type'], mkt_coord['class'], mkt_coord['asset'], mkt_coord['quote'])
+
+        if mkt_key not in self._data.mkt_data.keys():
+            self._data.mkt_data[mkt_key] = self._load_mkt_data(data_key)
+
+        return self._data.mkt_data.get(mkt_key, None)
 
     def _load_mkt_data(self, data_key: str):
         mkt_coord = MktCoordParser.parse_mkt_coord(data_key)
